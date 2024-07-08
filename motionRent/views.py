@@ -1,8 +1,26 @@
-from django.shortcuts import render, get_object_or_404
-from .models import RentalItem, Rental
+from django.shortcuts import render, get_object_or_404, redirect
+from .models import RentalItem, Rental, Location
+from .forms import RentalForm
 
 
 # Create your views here.
+
+def home(request):
+    rental_items_count = RentalItem.objects.count()
+    rental_locations = Location.objects.all()
+    if request.method == 'POST':
+        form = RentalForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('home')
+    else:
+        form = RentalForm()
+    context = {
+        'rental_items_count': rental_items_count,
+        'rental_locations': rental_locations,
+        'form': form,
+    }
+    return render(request, 'home.html', context)
 
 
 def temporary(request):
@@ -25,6 +43,7 @@ def temporary(request):
 def rental_items_list(request):
     category = request.GET.get('category')
     rental_items = RentalItem.objects.all()
+    rental_count = rental_items.count()
 
     if category:
         rental_items = rental_items.filter(category=category)
@@ -32,7 +51,8 @@ def rental_items_list(request):
     context = {
         'rental_items': rental_items,
         'selected_category': category,
-        'categories': ['car', 'motorcycle', 'construction_equipment']
+        'categories': ['car', 'motorcycle', 'construction_equipment'],
+        'rental_count': rental_count,
     }
     return render(request, 'rental_items_list.html', context)
 

@@ -1,0 +1,24 @@
+{% extends "main.html" %}
+
+
+
+{% block content %}
+ 
+ <!-- Header-->
+ <h1>Rental Item Detail</h1>
+
+    <h2>{{ rental_item.brand }} {{ rental_item.model }}</h2>
+    <p>Category: {{ rental_item.category }}</p>
+    <p>Year: {{ rental_item.year }}</p>
+    <p>Price per day: {{ rental_item.price_per_day }}</p>
+
+    {% if rental_item.image %}
+        <img src="{{ rental_item.image.url }}" alt="{{ rental_item.brand }} {{ rental_item.model }}" style="width:300px;">
+    {% else %}
+        <p>No image available</p>
+    {% endif %}
+
+    <a href="{% url 'rental_items_list' %}">Back to Rental Items List</a>
+          
+
+{% endblock %}
