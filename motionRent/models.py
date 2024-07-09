@@ -1,6 +1,6 @@
 from django.db import models
-
-# Create your models here.
+from django.core.exceptions import ValidationError
+from datetime import date
 
 
 class Location(models.Model):
@@ -25,12 +25,20 @@ class RentalItem(models.Model):
     category = models.CharField(max_length=30, choices=TYPE_CHOICES)
     brand = models.CharField(max_length=255)
     model = models.CharField(max_length=255)
+    number_plate = models.CharField(max_length=12, unique=True)
+    description = models.TextField(blank=True, null=True)
     year = models.IntegerField()
     price_per_day = models.DecimalField(max_digits=10, decimal_places=2)
     image = models.ImageField(upload_to='rental_images/', blank=True, null=True, default='rental_images/no-photo.jpg')
 
+
+
     def __str__(self):
         return f"{self.get_category_display()} - {self.brand} {self.model} ({self.year})"
+
+    def is_available(self, rental_date, return_date):
+        rentals = Rental.objects.filter(rental_item=self, return_date__gte=rental_date, rental_date__lte=return_date)
+        return not rentals.exists()
 
 
 class Rental(models.Model):
@@ -43,3 +51,12 @@ class Rental(models.Model):
     def __str__(self):
         return f"Rental for: {self.customer_name} - ({self.rental_item})"
 
+    def clean(self):
+        if self.return_date <= self.rental_date:
+            raise ValidationError("Return date must be after rental date.")
+        # if not self.rental_item.is_available(self.rental_date, self.return_date):
+        #     raise ValidationError("This item is not available for the selected dates.")
+
+    def save(self, *args, **kwargs):
+        self.clean()  # Ensure validation is called before saving
+        super().save(*args, **kwargs)

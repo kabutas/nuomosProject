@@ -1,24 +1,50 @@
 {% extends "main.html" %}
 
-
-
 {% block content %}
- 
- <!-- Header-->
- <h1>Rental Item Detail</h1>
-
-    <h2>{{ rental_item.brand }} {{ rental_item.model }}</h2>
-    <p>Category: {{ rental_item.category }}</p>
-    <p>Year: {{ rental_item.year }}</p>
-    <p>Price per day: {{ rental_item.price_per_day }}</p>
-
-    {% if rental_item.image %}
-        <img src="{{ rental_item.image.url }}" alt="{{ rental_item.brand }} {{ rental_item.model }}" style="width:300px;">
-    {% else %}
-        <p>No image available</p>
-    {% endif %}
-
-    <a href="{% url 'rental_items_list' %}">Back to Rental Items List</a>
-          
-
+<!-- Section-->
+<section class="py-5">
+    <div class="container px-4 px-lg-5 mt-5">
+        <div class="row gx-4 gx-lg-5 align-items-center">
+            <!-- Product image-->
+            <div class="col-md-6">
+                {% if rental_item.image %}
+                    <img class="card-img-top mb-5 mb-md-0" src="{{ rental_item.image.url }}"
+                         alt="{{ rental_item.brand }} {{ rental_item.model }}"/>
+                {% else %}
+                    <p>No image available</p>
+                {% endif %}
+            </div>
+            <!-- Product details-->
+            <div class="col-md-6">
+                <h1 class="display-5 fw-bolder">{{ rental_item.brand }} - {{ rental_item.model }}</h1>
+                <div class="fs-5 mb-5">
+                    <span>{{ rental_item.price_per_day }} €/day</span>
+                </div>
+                <p class="lead"><strong>Category:</strong> {{ rental_item.get_category_display }}</p>
+                <p class="lead"><strong>Year:</strong> {{ rental_item.year }}</p>
+                <p class="lead"><strong>Location:</strong> {{ rental_item.location.name }}, {{ rental_item.location.address }}, {{ rental_item.location.city }}, {{ rental_item.location.postal_code }}, {{ rental_item.location.country }}</p>
+                <p class="lead"><strong>Description:</strong> {{ rental_item.description }}</p>
+                <hr>
+                {% if return_date %}
+                    <p class="lead"><strong>Return date:</strong> {{ return_date }}</p>
+                {% else %}
+                    <p class="lead">Return date is not set.</p>
+                {% endif %}
+                <hr>
+                <p class="lead"><strong>Current date:</strong> {{ now|date:"Y-m-d" }}</p>
+                <hr>
+                <!-- Availability information -->
+                {% if not return_date or return_date < now %}
+                    <p class="lead"><strong>Availability:</strong> Available to rent</p>
+                    <a href="{% url 'create_rental' rental_item.pk %}" class="btn btn-primary mt-auto">Make a Reservation</a>
+                {% else %}
+                    <p class="lead"><strong>Availability:</strong> Will be available on {{ return_date }}</p>
+                {% endif %}
+                <div class="d-flex mt-3">
+                    <a href="{% url 'rental_items_list' %}" class="btn btn-outline-dark mt-auto">Back to Rental Items List</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 {% endblock %}

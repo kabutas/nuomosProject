@@ -1,4 +1,8 @@
 from django.shortcuts import render, get_object_or_404, redirect
+from django.utils import timezone
+from django.views.generic import DetailView, ListView, CreateView
+from django.urls import reverse_lazy
+
 from .models import RentalItem, Rental, Location
 from .forms import RentalForm
 
@@ -8,6 +12,7 @@ from .forms import RentalForm
 def home(request):
     rental_items_count = RentalItem.objects.count()
     rental_locations = Location.objects.all()
+
     if request.method == 'POST':
         form = RentalForm(request.POST)
         if form.is_valid():
@@ -15,6 +20,7 @@ def home(request):
             return redirect('home')
     else:
         form = RentalForm()
+
     context = {
         'rental_items_count': rental_items_count,
         'rental_locations': rental_locations,
@@ -27,39 +33,50 @@ def temporary(request):
     return render(request, 'temporary.html')
 
 
-# def rental_items_list(request):
-#     category = request.GET.get('category')
-#     if category:
-#         rental_items = RentalItem.objects.filter(category=category)
-#     else:
-#         rental_items = RentalItem.objects.all()
-#     context = {
-#         'rental_items': rental_items,
-#         'selected_category': category,
-#         'categories': ['Car', 'Motorcycle', 'Construction_Equipment']
-#     }
-#     return render(request, 'rental_items_list.html', context)
+class RentalItemListView(ListView):
+    model = RentalItem
+    template_name = 'rental_items_list.html'
+    context_object_name = 'rental_items'
 
-def rental_items_list(request):
-    category = request.GET.get('category')
-    rental_items = RentalItem.objects.all()
-    rental_count = rental_items.count()
-
-    if category:
-        rental_items = rental_items.filter(category=category)
-
-    context = {
-        'rental_items': rental_items,
-        'selected_category': category,
-        'categories': ['car', 'motorcycle', 'construction_equipment'],
-        'rental_count': rental_count,
-    }
-    return render(request, 'rental_items_list.html', context)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        category = self.request.GET.get('category')
+        if category:
+            context['rental_items'] = context['rental_items'].filter(category=category)
+        context['selected_category'] = category
+        context['categories'] = ['car', 'motorcycle', 'construction_equipment']
+        context['rental_count'] = context['rental_items'].count()
+        return context
 
 
-def rental_item_detail(request, pk):
-    rental_item = get_object_or_404(RentalItem, pk=pk)
-    context = {
-        'rental_item': rental_item
-    }
-    return render(request, 'rental_item_detail.html', context)
+class RentalItemDetailView(DetailView):
+    model = RentalItem
+    template_name = 'rental_item_detail.html'
+    context_object_name = 'rental_item'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        rental_item = self.get_object()
+        rental = rental_item.rental_set.all().order_by('return_date').first()
+        context['return_date'] = rental.return_date if rental else None
+        context['now'] = timezone.now().date()
+        return context
+
+
+class RentalCreateView(CreateView):
+    model = Rental
+    form_class = RentalForm
+    template_name = 'rental_form.html'
+
+    def form_valid(self, form):
+        rental_item = get_object_or_404(RentalItem, pk=self.kwargs['pk'])
+        form.instance.rental_item = rental_item
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse_lazy('rental_item_detail', kwargs={'pk': self.kwargs['pk']})
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['rental_item'] = get_object_or_404(RentalItem, pk=self.kwargs['pk'])
+        return context
