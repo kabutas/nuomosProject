@@ -9,6 +9,11 @@ class Location(models.Model):
     city = models.CharField(max_length=255)
     postal_code = models.CharField(max_length=255)
     country = models.CharField(max_length=255)
+    image = models.ImageField(upload_to='location_images/',
+                              blank=True,
+                              null=True,
+                              default='location_images/no-image-available-building.jpg',
+                              )
 
     def __str__(self):
         return self.name

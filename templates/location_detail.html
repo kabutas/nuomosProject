@@ -1,0 +1,21 @@
+{% extends 'main.html' %}
+
+{% block content %}
+<div class="container my-5">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <h5 class="card-title">{{ location.name }}</h5>
+                {% if location.image %}
+                    <img class="card-img-top" src="{{ location.image.url }}" alt="{{ location.name }}">
+                {% else %}
+                    <p>No image available</p>
+                {% endif %}
+                <div class="card-body">
+                    <p class="card-text">{{ location.address }}, {{ location.city }}, {{ location.postal_code }}, {{ location.country }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

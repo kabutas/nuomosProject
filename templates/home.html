@@ -6,8 +6,8 @@
     <header class="bg-dark py-5">
         <div class="container px-4 px-lg-5 my-5">
             <div class="text-center text-white">
-                <h1 class="display-4 fw-bolder">Shop in style</h1>
-                <p class="lead fw-normal text-white-50 mb-0">With this shop hompeage template</p>
+                <h1 class="display-4 fw-bolder">Looking To Rent A Car?</h1>
+                <p class="lead fw-normal text-white-50 mb-0">You are at right place</p>
             </div>
         </div>
     </header>
@@ -18,30 +18,37 @@
     </div>
 
     <!-- Rental Locations -->
-<!-- Rental Locations -->
-<div class="container my-5">
-    <h2 class="text-center">Our Locations</h2>
-    <div class="row">
-        {% for location in rental_locations %}
-            <div class="col-md-6">
-                <div class="card mb-4">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ location.name }}</h5>
-                        <p class="card-text">{{ location.address }}, {{ location.city }}, {{ location.postal_code }}, {{ location.country }}</p>
-                    </div>
-                </div>
+
+    <div class="container my-5">
+        <h2 class="text-center">Our Locations</h2>
+        <div class="row">
+            {% for location in rental_locations %}
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">{{ location.name }}</h5>
+                <a href="{% url 'location_detail' location.id %}">
+                    {% if location.image %}
+                        <img class="card-img-top" src="{{ location.image.url }}" alt="{{ location.name }}">
+                    {% else %}
+                        <p>No image available</p>
+                    {% endif %}
+                </a>
+                <p class="card-text">{{ location.address }}, {{ location.city }}, {{ location.postal_code }}, {{ location.country }}</p>
             </div>
-        {% endfor %}
+        </div>
     </div>
-</div>
+{% endfor %}
+        </div>
+    </div>
 
 
-{% block extra_js %}
-<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
-<link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+    {% block extra_js %}
+        <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+        <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 
-{% endblock %}
+    {% endblock %}
 {% endblock %}
 
 

@@ -80,3 +80,9 @@ class RentalCreateView(CreateView):
         context = super().get_context_data(**kwargs)
         context['rental_item'] = get_object_or_404(RentalItem, pk=self.kwargs['pk'])
         return context
+
+
+class LocationDetailView(DetailView):
+    model = Location
+    template_name = 'location_detail.html'
+    context_object_name = 'location'
