@@ -62,23 +62,32 @@ class RentalItemListView(ListView):
     template_name = 'rental_items_list.html'
     context_object_name = 'rental_items'
 
+    from django.utils import timezone
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         category = self.request.GET.get('category')
         rental_items = context['rental_items']
-        rental = None
-        if rental_items.exists():
-            rental_item = rental_items.first()
-            rental = rental_item.rental_set.all().order_by('return_date').last()
+
         if category:
-            context['rental_items'] = rental_items.filter(category=category)
+            rental_items = rental_items.filter(category=category)
+
+        # Adding availability status to each rental item
+        for item in rental_items:
+            rental = item.rental_set.all().order_by('return_date').last()
+            if rental:
+                item.is_available = rental.return_date < timezone.now().date()
+            else:
+                item.is_available = True
+
+        # Sorting items to show available ones first
+        rental_items = sorted(rental_items, key=lambda x: not x.is_available)
+
+        context['rental_items'] = rental_items
         context['selected_category'] = category
         context['categories'] = ['car', 'motorcycle', 'construction_equipment']
-        context['rental_count'] = rental_items.count()
-        if rental:
-            context['is_available'] = rental.return_date < timezone.now().date()
-        else:
-            context['is_available'] = True
+        context['rental_count'] = len(rental_items)
+
         return context
 
 
@@ -130,7 +139,13 @@ class LocationDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         location = self.get_object()
         rental_items = RentalItem.objects.filter(location=location)
+
+        # Define a method to check availability
+        def is_available(item):
+            rental = item.rental_set.all().order_by('return_date').last()
+            return rental.return_date < timezone.now().date() if rental else True
+
+        rental_items = sorted(rental_items, key=lambda x: not is_available(x))
         context['rental_items'] = rental_items
 
         return context
-

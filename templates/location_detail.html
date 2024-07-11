@@ -20,8 +20,7 @@
                 <div class="card mb-4">
                     <h5 class="card-title">Title of description maybe?</h5>
                     <div class="card-body">
-                        <p>description placeholdar. description placeholdar. description placeholdar. description
-                            placeholdar. description placeholdar. description placeholdar. description placeholdar. </p>
+                        <p> {{ location.description }} </p>
                     </div>
                 </div>
             </div>
@@ -38,7 +37,7 @@
                                             {% if item.image %}
                                                 {% if item.is_available %}
                                                 <a href="{% url 'rental_item_detail' item.id %}">
-                                                    <img class="card-img-top" src="{{ item.image.url }}"
+                                                    <img class="card-img-top card-img-top2 " src="{{ item.image.url }}"
                                                          alt="{{ item.brand }} {{ item.model }}">
                                                 </a>
                                                 {% else %}
