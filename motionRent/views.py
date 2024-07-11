@@ -1,13 +1,37 @@
+from io import BytesIO
+from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
 from django.views.generic import DetailView, ListView, CreateView
 from django.urls import reverse_lazy
-
+from PIL import Image, ImageDraw, ImageFont
+from django.core.files.images import ImageFile
 from .models import RentalItem, Rental, Location
 from .forms import RentalForm
 
 
 # Create your views here.
+def add_watermark(image):
+    base_image = Image.open(image).convert("RGBA")
+
+    # Make the image editable
+    txt = Image.new('RGBA', base_image.size, (255, 255, 255, 0))
+
+    # Choose a font and size
+    font = ImageFont.truetype('arial.ttf', 15)
+
+    d = ImageDraw.Draw(txt)
+
+    # Position the text at (10, 10) from the top left corner
+    d.text((10, 10), "Unavailable", fill=(255, 255, 255, 128), font=font)
+
+    watermarked = Image.alpha_composite(base_image, txt)
+
+    # Save the watermarked image
+    byte_arr = BytesIO()
+    watermarked.save(byte_arr, format='PNG')
+    return byte_arr.getvalue()
+
 
 def home(request):
     rental_items_count = RentalItem.objects.count()
@@ -57,11 +81,16 @@ class RentalItemDetailView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         rental_item = self.get_object()
-        rental = rental_item.rental_set.all().order_by('return_date').first()
+        rental = rental_item.rental_set.all().order_by('return_date').last()
         context['return_date'] = rental.return_date if rental else None
         context['now'] = timezone.now().date()
-        return context
 
+        if rental:
+            context['is_available'] = rental.return_date < timezone.now().date()
+        else:
+            context['is_available'] = True
+
+        return context
 
 class RentalCreateView(CreateView):
     model = Rental
@@ -86,3 +115,16 @@ class LocationDetailView(DetailView):
     model = Location
     template_name = 'location_detail.html'
     context_object_name = 'location'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        location = self.get_object()
+        rental_items = RentalItem.objects.filter(location=location)
+
+        for item in rental_items:
+            if not item.is_available():
+                watermarked_image = add_watermark(item.image)
+                item.image.save(f"watermarked_{item.image.name}", ImageFile(BytesIO(watermarked_image)))
+
+        context['rental_items'] = rental_items
+        return context

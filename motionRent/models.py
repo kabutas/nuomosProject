@@ -1,6 +1,6 @@
 from django.db import models
 from django.core.exceptions import ValidationError
-from datetime import date
+from datetime import date, timezone, datetime
 
 
 class Location(models.Model):
@@ -36,14 +36,12 @@ class RentalItem(models.Model):
     price_per_day = models.DecimalField(max_digits=10, decimal_places=2)
     image = models.ImageField(upload_to='rental_images/', blank=True, null=True, default='rental_images/no-photo.jpg')
 
-
-
     def __str__(self):
         return f"{self.get_category_display()} - {self.brand} {self.model} ({self.year})"
 
-    def is_available(self, rental_date, return_date):
-        rentals = Rental.objects.filter(rental_item=self, return_date__gte=rental_date, rental_date__lte=return_date)
-        return not rentals.exists()
+    def is_available(self):
+        latest_rental = self.rental_set.all().order_by('return_date').last()
+        return latest_rental is None or latest_rental.return_date < datetime.now().date()
 
 
 class Rental(models.Model):
@@ -59,7 +57,7 @@ class Rental(models.Model):
     def clean(self):
         if self.return_date <= self.rental_date:
             raise ValidationError("Return date must be after rental date.")
-        # if not self.rental_item.is_available(self.rental_date, self.return_date):
+        # if not self.rental_item.is_available():
         #     raise ValidationError("This item is not available for the selected dates.")
 
     def save(self, *args, **kwargs):

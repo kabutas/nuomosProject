@@ -1,21 +1,59 @@
 {% extends 'main.html' %}
 
 {% block content %}
-<div class="container my-5">
-    <div class="row">
-        <div class="col-md-6">
-            <div class="card mb-4">
-                <h5 class="card-title">{{ location.name }}</h5>
-                {% if location.image %}
-                    <img class="card-img-top" src="{{ location.image.url }}" alt="{{ location.name }}">
-                {% else %}
-                    <p>No image available</p>
-                {% endif %}
-                <div class="card-body">
-                    <p class="card-text">{{ location.address }}, {{ location.city }}, {{ location.postal_code }}, {{ location.country }}</p>
+    <div class="container my-5">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <h5 class="card-title">{{ location.name }}</h5>
+                    {% if location.image %}
+                        <img class="card-img-top" src="{{ location.image.url }}" alt="{{ location.name }}">
+                    {% else %}
+                        <p>No image available</p>
+                    {% endif %}
+                    <div class="card-body">
+                        <p class="card-text">{{ location.address }}, {{ location.city }}, {{ location.postal_code }}, {{ location.country }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <h5 class="card-title">Title of description maybe?</h5>
+                    <div class="card-body">
+                        <p>description placeholdar. description placeholdar. description placeholdar. description placeholdar. description placeholdar. description placeholdar. description placeholdar. </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="card mb-4 border-0">
+                    <h5 class="card-title">Cars at this location</h5>
+                    <div class="card-body">
+                        {% if rental_items %}
+                            <div class="row">
+                                {% for item in rental_items %}
+                                    <div class="col-md-4">
+                                        <div class="card mb-4">
+                                            {% if item.image %}
+                                                <a href="{% url 'rental_item_detail' item.id %}">
+                                                    <img class="card-img-top" src="{{ item.image.url }}" alt="{{ item.brand }} {{ item.model }}">
+                                                </a>
+                                            {% else %}
+                                                <p>No image available</p>
+                                            {% endif %}
+                                            <div class="card-body">
+                                                <h5 class="card-title">{{ item.brand }} {{ item.model }} ({{ item.year }})</h5>
+                                                <p class="card-text">{{ item.description }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <p>No cars available at this location.</p>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 {% endblock %}

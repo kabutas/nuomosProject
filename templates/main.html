@@ -8,7 +8,7 @@
         <meta name="author" content="Andrius Karpis" />
         <title>RentMotion - a place to all your rent needs</title>
         <!-- Favicon-->
-        <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+        <link rel="icon" type="image/x-icon" href="../static/assets/favicon.ico" />
         <!-- Bootstrap icons-->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css" rel="stylesheet" />
         <!-- Core theme CSS (includes Bootstrap)-->
@@ -26,17 +26,17 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
                         <li class="nav-item"><a class="nav-link active" aria-current="page" href="{% url 'rental_items_list' %}">Our vehicles to chose from</a></li>
-{#                        <li class="nav-item"><a class="nav-link" href="#!">About</a></li>#}
-{#                        <li class="nav-item dropdown">#}
-{#                            <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Rent Options#}
-{#                            </a>#}
-{#                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">#}
-{#                                {% for category in categories %}#}
-{#                                <li><a class="dropdown-item" href={% url 'rental_items_list' %}?category={{ category }}>Show all#}
-{#                                    {{ category }}</a></li>   #}
-{#                                {% endfor %}                                #}
-{#                            </ul>#}
-{#                        </li>#}
+                        <li class="nav-item"><a class="nav-link" href="#!">About</a></li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Rent Options
+                            </a>
+                            <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                {% for category in categories %}
+                                <li><a class="dropdown-item" href={% url 'rental_items_list' %}?category={{ category }}>Show all
+                                    {{ category }}</a></li>   
+                                {% endfor %}                                
+                            </ul>
+                        </li>
                     </ul>
                     <form class="d-flex">
                         <button class="btn btn-outline-dark" type="submit">
