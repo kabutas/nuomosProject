@@ -65,11 +65,20 @@ class RentalItemListView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         category = self.request.GET.get('category')
+        rental_items = context['rental_items']
+        rental = None
+        if rental_items.exists():
+            rental_item = rental_items.first()
+            rental = rental_item.rental_set.all().order_by('return_date').last()
         if category:
-            context['rental_items'] = context['rental_items'].filter(category=category)
+            context['rental_items'] = rental_items.filter(category=category)
         context['selected_category'] = category
         context['categories'] = ['car', 'motorcycle', 'construction_equipment']
-        context['rental_count'] = context['rental_items'].count()
+        context['rental_count'] = rental_items.count()
+        if rental:
+            context['is_available'] = rental.return_date < timezone.now().date()
+        else:
+            context['is_available'] = True
         return context
 
 
@@ -91,6 +100,7 @@ class RentalItemDetailView(DetailView):
             context['is_available'] = True
 
         return context
+
 
 class RentalCreateView(CreateView):
     model = Rental
@@ -120,11 +130,7 @@ class LocationDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         location = self.get_object()
         rental_items = RentalItem.objects.filter(location=location)
-
-        for item in rental_items:
-            if not item.is_available():
-                watermarked_image = add_watermark(item.image)
-                item.image.save(f"watermarked_{item.image.name}", ImageFile(BytesIO(watermarked_image)))
-
         context['rental_items'] = rental_items
+
         return context
+

@@ -42,9 +42,13 @@
                 <div class="col mb-5">
                     <div class="card h-100">
                         <!-- Product image -->
-                        <a href="{% url 'rental_item_detail' rental.id %}">
+                        {%  if rental.is_available %}
+                        <a href="{% url 'rental_item_detail' rental.id %}">                            
                         <img class="card-img-top" src="{{ rental.image.url }}" alt="rental vehicle image"/>
                         </a> 
+                        {% else %}
+                        <img class="card-img-top unavailable" src="{{ rental.image.url }}" alt="rental vehicle image"/>
+                        {% endif %}
                             <!-- Product details -->
                         <div class="card-body p-4">
                             <div class="text-center">
@@ -55,6 +59,7 @@
                                 <div class="mb-0 small">{{ rental.price_per_day }}/day</div>
                             </div>
                         </div>
+                        <div class="card-footer">-- {{ rental.is_available }} --</div>
                         
                         
                     </div>

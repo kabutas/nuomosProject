@@ -20,10 +20,12 @@
                 <div class="card mb-4">
                     <h5 class="card-title">Title of description maybe?</h5>
                     <div class="card-body">
-                        <p>description placeholdar. description placeholdar. description placeholdar. description placeholdar. description placeholdar. description placeholdar. description placeholdar. </p>
+                        <p>description placeholdar. description placeholdar. description placeholdar. description
+                            placeholdar. description placeholdar. description placeholdar. description placeholdar. </p>
                     </div>
                 </div>
             </div>
+        
             <div class="col-md-12">
                 <div class="card mb-4 border-0">
                     <h5 class="card-title">Cars at this location</h5>
@@ -34,15 +36,23 @@
                                     <div class="col-md-4">
                                         <div class="card mb-4">
                                             {% if item.image %}
+                                                {% if item.is_available %}
                                                 <a href="{% url 'rental_item_detail' item.id %}">
-                                                    <img class="card-img-top" src="{{ item.image.url }}" alt="{{ item.brand }} {{ item.model }}">
+                                                    <img class="card-img-top" src="{{ item.image.url }}"
+                                                         alt="{{ item.brand }} {{ item.model }}">
                                                 </a>
+                                                {% else %}
+                                                    <img class="card-img-top unavailable" src="{{ item.image.url }}"
+                                                         alt="{{ item.brand }} {{ item.model }}">
+                                                {% endif %}
                                             {% else %}
                                                 <p>No image available</p>
                                             {% endif %}
                                             <div class="card-body">
-                                                <h5 class="card-title">{{ item.brand }} {{ item.model }} ({{ item.year }})</h5>
+                                                <h5 class="card-title">{{ item.brand }} {{ item.model }}
+                                                    ({{ item.year }})</h5>
                                                 <p class="card-text">{{ item.description }}</p>
+                                                <p class="card-text">--{{ item.rental_is_available }}--</p>
                                             </div>
                                         </div>
                                     </div>

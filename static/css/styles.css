@@ -10849,3 +10849,8 @@ textarea.form-control-lg {
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
     font-weight: bold;
 }
+
+.unavailable {
+  filter: grayscale(100%);
+  opacity: 0.5;
+}
