@@ -18,7 +18,7 @@ def add_watermark(image):
     base_image = Image.open(image).convert("RGBA")
 
     # Make the image editable
-    txt = Image.new('RGBA', base_image.size, (255, 255, 255, 0))
+    txt = Image.new('RGBA', base_image.size, (255, 0, 255, 0))
 
     # Choose a font and size
     font = ImageFont.truetype('arial.ttf', 15)
@@ -26,7 +26,7 @@ def add_watermark(image):
     d = ImageDraw.Draw(txt)
 
     # Position the text at (10, 10) from the top left corner
-    d.text((10, 10), "Unavailable", fill=(255, 255, 255, 128), font=font)
+    d.text((10, 10), "Unavailable", fill=(255, 0, 255, 128), font=font)
 
     watermarked = Image.alpha_composite(base_image, txt)
 
@@ -163,7 +163,10 @@ def register(request):
     if request.method == 'POST':
         form = RegistrationForm(request.POST)
         if form.is_valid():
-            user = form.save()
+            user = form.save(commit=False)
+            user.full_name = form.cleaned_data.get('full_name')
+            user.drivers_license = form.cleaned_data.get('drivers_license')
+            user.save()
             login(request, user)
             return redirect('home')
     else:

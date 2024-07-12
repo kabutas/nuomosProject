@@ -16,13 +16,22 @@ class RentalForm(forms.ModelForm):
 
 
 class RegistrationForm(UserCreationForm):
-    drivers_license = forms.CharField(max_length=30,
-                                      required=True,
-                                      help_text='Required. Enter your driver\'s license number.')
+    email = forms.EmailField(required=True)
+    full_name = forms.CharField(max_length=100, required=True)
+    drivers_license = forms.CharField(max_length=50, required=True)
 
     class Meta:
         model = User
-        fields = ['username', 'password1', 'password2', 'email', 'drivers_license']
+        fields = ['username', 'email', 'full_name', 'drivers_license', 'password1', 'password2']
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.email = self.cleaned_data['email']
+        user.full_name = self.cleaned_data['full_name']
+        user.drivers_license = self.cleaned_data['drivers_license']
+        if commit:
+            user.save()
+        return user
 
 
 class LoginForm(AuthenticationForm):
