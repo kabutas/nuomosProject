@@ -1,6 +1,7 @@
 from io import BytesIO
 
 from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
@@ -59,6 +60,10 @@ def temporary(request):
     return render(request, 'temporary.html')
 
 
+def about(request):
+    return render(request, 'about.html')
+
+
 class RentalItemListView(ListView):
     model = RentalItem
     template_name = 'rental_items_list.html'
@@ -113,10 +118,11 @@ class RentalItemDetailView(DetailView):
         return context
 
 
-class RentalCreateView(CreateView):
+class RentalCreateView(LoginRequiredMixin, CreateView):
     model = Rental
     form_class = RentalForm
     template_name = 'rental_form.html'
+    login_url = 'login'
 
     def form_valid(self, form):
         rental_item = get_object_or_404(RentalItem, pk=self.kwargs['pk'])
@@ -175,6 +181,9 @@ def login_view(request):
             user = authenticate(username=username, password=password)
             if user is not None:
                 login(request, user)
+                next_url = request.GET.get('next', 'home')
+                if next_url:
+                    return redirect(next_url)
                 return redirect('home')
     else:
         form = LoginForm()

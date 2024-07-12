@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import home, temporary, RentalItemListView, RentalItemDetailView, RentalCreateView, LocationDetailView, \
-    register, login_view, logout_view
+    register, login_view, logout_view, about
 
 urlpatterns = [
     path('', home, name='home'),
@@ -9,6 +9,7 @@ urlpatterns = [
     path('rental-items/<int:pk>/', RentalItemDetailView.as_view(), name='rental_item_detail'),
     path('create-rental/<int:pk>/', RentalCreateView.as_view(), name='create_rental'),
     path('location/<int:pk>/', LocationDetailView.as_view(), name='location_detail'),
+    path('about/', about, name='about'),
     path('register/', register, name='register'),
     path('login/', login_view, name='login'),
     path('logout/', logout_view, name='logout'),
