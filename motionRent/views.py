@@ -1,4 +1,6 @@
 from io import BytesIO
+
+from django.contrib.auth import login, authenticate, logout
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
@@ -7,7 +9,7 @@ from django.urls import reverse_lazy
 from PIL import Image, ImageDraw, ImageFont
 from django.core.files.images import ImageFile
 from .models import RentalItem, Rental, Location
-from .forms import RentalForm
+from .forms import RentalForm, RegistrationForm, LoginForm
 
 
 # Create your views here.
@@ -149,3 +151,36 @@ class LocationDetailView(DetailView):
         context['rental_items'] = rental_items
 
         return context
+
+
+def register(request):
+    if request.method == 'POST':
+        form = RegistrationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            return redirect('home')
+    else:
+        form = RegistrationForm()
+
+    return render(request, 'register.html', {'form': form})
+
+
+def login_view(request):
+    if request.method == 'POST':
+        form = LoginForm(data=request.POST)
+        if form.is_valid():
+            username = form.cleaned_data.get('username')
+            password = form.cleaned_data.get('password')
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                login(request, user)
+                return redirect('home')
+    else:
+        form = LoginForm()
+    return render(request, 'login.html', {'form': form})
+
+
+def logout_view(request):
+    logout(request)
+    return redirect('home')
