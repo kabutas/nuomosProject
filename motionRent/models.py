@@ -48,14 +48,16 @@ class RentalItem(models.Model):
 
 class Rental(models.Model):
     rental_item = models.ForeignKey(RentalItem, on_delete=models.CASCADE)
-    customer_name = models.ForeignKey(User, on_delete=models.CASCADE, related_name='rentals_by_name')
-    customer_email = models.ForeignKey(User, on_delete=models.CASCADE, related_name='rentals_by_email')
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    customer_email = models.EmailField()
     rental_date = models.DateField()
     return_date = models.DateField()
-    # paid = models.BooleanField(default=False)
+    date_created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Rental for: {self.customer_name} - ({self.rental_item})"
+        return f"Rental for: {self.first_name} - ({self.rental_item})"
 
     def clean(self):
         if self.return_date < self.rental_date:

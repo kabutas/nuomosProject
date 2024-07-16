@@ -122,6 +122,7 @@ class RentalCreateView(LoginRequiredMixin, CreateView):
     def form_valid(self, form):
         rental_item = get_object_or_404(RentalItem, pk=self.kwargs['pk'])
         form.instance.rental_item = rental_item
+        form.instance.user = self.request.user
         return super().form_valid(form)
 
     def get_success_url(self):
@@ -131,6 +132,11 @@ class RentalCreateView(LoginRequiredMixin, CreateView):
         context = super().get_context_data(**kwargs)
         context['rental_item'] = get_object_or_404(RentalItem, pk=self.kwargs['pk'])
         return context
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['user'] = self.request.user
+        return kwargs
 
 
 class LocationDetailView(DetailView):
