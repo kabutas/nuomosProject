@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.db import models
 from django.core.exceptions import ValidationError
 from datetime import date, timezone, datetime
@@ -47,8 +48,8 @@ class RentalItem(models.Model):
 
 class Rental(models.Model):
     rental_item = models.ForeignKey(RentalItem, on_delete=models.CASCADE)
-    customer_name = models.CharField(max_length=255)
-    customer_email = models.EmailField()
+    customer_name = models.ForeignKey(User, on_delete=models.CASCADE, related_name='rentals_by_name')
+    customer_email = models.ForeignKey(User, on_delete=models.CASCADE, related_name='rentals_by_email')
     rental_date = models.DateField()
     return_date = models.DateField()
     # paid = models.BooleanField(default=False)

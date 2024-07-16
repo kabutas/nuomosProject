@@ -50,7 +50,7 @@
                                             <div class="card-body">
                                                 <h5 class="card-title">{{ item.brand }} {{ item.model }}
                                                     ({{ item.year }})</h5>
-                                                <p class="card-text">{{ item.description }}</p>
+                                                <p class="card-text">{{ item.description|truncatechars:50 }}</p>
                                                 <p class="card-text">--{{ item.rental_is_available }}--</p>
                                             </div>
                                         </div>
