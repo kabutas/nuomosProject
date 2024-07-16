@@ -12441,3 +12441,9 @@ textarea.form-control-lg {
 .card-img-top2:hover {
     transform: scale(1.1); /* (110% zoom) */
 }
+
+.active-reservation {
+    background-color: #346827;
+    color: yellow;
+    text: bold;
+}

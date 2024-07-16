@@ -1,0 +1,27 @@
+{% extends "main.html" %}
+
+{% block content %}
+<h2 class="page-title">All Reservations</h2>
+<table class="table table-responsive">
+    <thead>
+        <tr>
+            <th>Customer Name</th>
+            <th>Email</th>
+            <th>Rental Item</th>
+            <th>Rental Date</th>
+            <th>Return Date</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for rental in rentals %}
+        <tr class="{% if rental.return_date > now %}active-reservation{% endif %}">
+            <td>{{ rental.customer_name }}</td>
+            <td>{{ rental.customer_email }}</td>
+            <td>{{ rental.rental_item }}</td>
+            <td>{{ rental.rental_date }}</td>
+            <td>{{ rental.return_date }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

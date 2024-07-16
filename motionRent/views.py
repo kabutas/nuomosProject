@@ -1,3 +1,4 @@
+from datetime import datetime
 from io import BytesIO
 
 from django.contrib.auth import login, authenticate, logout
@@ -196,3 +197,9 @@ def login_view(request):
 def logout_view(request):
     logout(request)
     return redirect('home')
+
+
+def all_rentals(request):
+    rentals = Rental.objects.all()
+    now = timezone.now().date()
+    return render(request, 'all_rentals.html', {'rentals': rentals, 'now': now})
