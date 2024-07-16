@@ -37,3 +37,9 @@ class RegistrationForm(UserCreationForm):
 class LoginForm(AuthenticationForm):
     username = forms.CharField(max_length=254, required=True, help_text='Required. Enter your username.')
     password = forms.CharField(widget=forms.PasswordInput, required=True, help_text='Required. Enter your password.')
+
+
+class RentalUpdateForm(forms.ModelForm):
+    class Meta:
+        model = Rental
+        fields = ['rental_date', 'return_date']

@@ -12445,5 +12445,14 @@ textarea.form-control-lg {
 .active-reservation {
     background-color: #346827;
     color: yellow;
-    text: bold;
+}
+
+@keyframes highlight {
+  0% { background-color: initial; }
+  50% { background-color: yellow; }
+  100% { background-color: initial; }
+}
+
+.animate-highlight {
+  animation: highlight 1s ease;
 }

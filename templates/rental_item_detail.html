@@ -24,15 +24,7 @@
                 <p class="lead"><strong>Year:</strong> {{ rental_item.year }}</p>
                 <p class="lead"><strong>Location:</strong> {{ rental_item.location.name }}, {{ rental_item.location.address }}, {{ rental_item.location.city }}, {{ rental_item.location.postal_code }}, {{ rental_item.location.country }}</p>
                 <p class="lead"><strong>Description:</strong> {{ rental_item.description }}</p>
-                <hr>
-                {% if return_date %}
-                    <p class="lead"><strong>Return date:</strong> {{ return_date }}</p>
-                {% else %}
-                    <p class="lead">Return date is not set.</p>
-                {% endif %}
-                <hr>
-                <p class="lead"><strong>Current date:</strong> {{ now|date:"Y-m-d" }}</p>
-                <hr>
+                
                 <!-- Availability information -->
                 {% if not return_date or return_date < now %}
                     <p class="lead"><strong>Availability:</strong> Available to rent</p>

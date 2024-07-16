@@ -31,7 +31,7 @@ class RentalItem(models.Model):
     category = models.CharField(max_length=30, choices=TYPE_CHOICES)
     brand = models.CharField(max_length=255)
     model = models.CharField(max_length=255)
-    number_plate = models.CharField(max_length=12, unique=True)
+    number_plate = models.CharField(max_length=12, unique=True, default='XX-XX-XX')
     description = models.TextField(blank=True, null=True)
     year = models.IntegerField()
     price_per_day = models.DecimalField(max_digits=10, decimal_places=2)
@@ -51,6 +51,7 @@ class Rental(models.Model):
     customer_email = models.EmailField()
     rental_date = models.DateField()
     return_date = models.DateField()
+    # paid = models.BooleanField(default=False)
 
     def __str__(self):
         return f"Rental for: {self.customer_name} - ({self.rental_item})"
@@ -62,5 +63,5 @@ class Rental(models.Model):
         #     raise ValidationError("This item is not available for the selected dates.")
 
     def save(self, *args, **kwargs):
-        self.clean()  # Ensure validation is called before saving
+        self.clean()
         super().save(*args, **kwargs)

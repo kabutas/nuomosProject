@@ -14,7 +14,7 @@
     </thead>
     <tbody>
         {% for rental in rentals %}
-        <tr class="{% if rental.return_date > now %}active-reservation{% endif %}">
+        <tr class="{% if rental.return_date > now %}active-reservation{% endif %}" data-href="{% url 'rental_detail' rental.id %}">
             <td>{{ rental.customer_name }}</td>
             <td>{{ rental.customer_email }}</td>
             <td>{{ rental.rental_item }}</td>
@@ -24,4 +24,20 @@
         {% endfor %}
     </tbody>
 </table>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const rows = document.querySelectorAll('tr[data-href]');
+    rows.forEach(row => {
+        row.addEventListener('mouseover', function() {
+            this.classList.add('animate-highlight');
+        });
+        row.addEventListener('mouseout', function() {
+            this.classList.remove('animate-highlight');
+        });
+        row.addEventListener('click', function() {
+            window.location.href = this.dataset.href;
+        });
+    });
+});
+</script>
 {% endblock %}

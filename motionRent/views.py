@@ -1,7 +1,7 @@
 from datetime import datetime
 from io import BytesIO
-
 from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
@@ -11,7 +11,7 @@ from django.urls import reverse_lazy
 from PIL import Image, ImageDraw, ImageFont
 from django.core.files.images import ImageFile
 from .models import RentalItem, Rental, Location
-from .forms import RentalForm, RegistrationForm, LoginForm
+from .forms import RentalForm, RegistrationForm, LoginForm, RentalUpdateForm
 
 
 # Create your views here.
@@ -57,10 +57,6 @@ def home(request):
     return render(request, 'home.html', context)
 
 
-def temporary(request):
-    return render(request, 'temporary.html')
-
-
 def about(request):
     return render(request, 'about.html')
 
@@ -69,8 +65,6 @@ class RentalItemListView(ListView):
     model = RentalItem
     template_name = 'rental_items_list.html'
     context_object_name = 'rental_items'
-
-    from django.utils import timezone
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -199,7 +193,36 @@ def logout_view(request):
     return redirect('home')
 
 
+@login_required
+@user_passes_test(lambda u: u.is_staff)
 def all_rentals(request):
     rentals = Rental.objects.all()
     now = timezone.now().date()
     return render(request, 'all_rentals.html', {'rentals': rentals, 'now': now})
+
+
+@login_required
+@user_passes_test(lambda u: u.is_staff)
+def rental_detail(request, pk):
+    rental = get_object_or_404(Rental, pk=pk)
+    return render(request, 'rental_detail.html', {'rental': rental})
+
+
+def rental_update(request, rental_id):
+    rental = get_object_or_404(Rental, id=rental_id)
+    if request.method == 'POST':
+        form = RentalUpdateForm(request.POST, instance=rental)
+        if form.is_valid():
+            form.save()
+            return redirect('some-view-name')  # Redirect to a new URL
+    else:
+        form = RentalUpdateForm(instance=rental)
+    return render(request, 'rental_update.html', {'form': form})
+
+
+def rental_delete(request, rental_id):
+    rental = get_object_or_404(Rental, id=rental_id)
+    if request.method == 'POST':
+        rental.delete()
+        return redirect('some-view-name')  # Redirect to a new URL
+    return render(request, 'rental_confirm_delete.html', {'rental': rental})
