@@ -17,17 +17,18 @@ class RentalForm(forms.ModelForm):
 
 class RegistrationForm(UserCreationForm):
     email = forms.EmailField(required=True)
-    full_name = forms.CharField(max_length=100, required=True)
+    # full_name = forms.CharField(max_length=100, required=True)
     drivers_license = forms.CharField(max_length=50, required=True)
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'full_name', 'drivers_license', 'password1', 'password2']
+        fields = ['username', 'email', 'first_name', 'last_name', 'drivers_license', 'password1', 'password2']
 
     def save(self, commit=True):
         user = super().save(commit=False)
         user.email = self.cleaned_data['email']
-        user.full_name = self.cleaned_data['full_name']
+        user.first_name = self.cleaned_data['first_name']
+        user.last_name = self.cleaned_data['last_name']
         user.drivers_license = self.cleaned_data['drivers_license']
         if commit:
             user.save()
