@@ -3,6 +3,8 @@
 {% block content %}
 <div class="container my-5">
     <h2 class="page-title">All Reservations</h2>
+    <a href="{% url 'staff_reservation_create' %}" class="btn btn-dark mb-3">Create New Reservation</a>
+
     <div class="table-responsive">
         <table class="table table-hover">
             <thead class="table-light">

@@ -11,7 +11,7 @@ from django.urls import reverse_lazy
 from PIL import Image, ImageDraw, ImageFont
 from django.core.files.images import ImageFile
 from .models import RentalItem, Rental, Location
-from .forms import RentalForm, RegistrationForm, LoginForm, RentalUpdateForm
+from .forms import RentalForm, RegistrationForm, LoginForm, RentalUpdateForm, StaffRentalForm
 
 
 # Create your views here.
@@ -232,3 +232,25 @@ def rental_delete(request, rental_id):
         rental.delete()
         return redirect('all_rentals')  # Redirect to a new URL
     return render(request, 'rental_confirm_delete.html', {'rental': rental})
+
+
+def staff_reservation_create(request):
+    if request.method == 'POST':
+        form = StaffRentalForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('reservation_success')  # Redirect to a success page
+    else:
+        form = StaffRentalForm()
+
+    return render(request, 'staff_reservation_form.html', {'form': form})
+
+
+class StaffRentalCreateView(LoginRequiredMixin, CreateView):
+    model = Rental
+    form_class = StaffRentalForm
+    template_name = 'staff_reservation_form.html'
+    login_url = 'login'
+
+    def get_success_url(self):
+        return reverse_lazy('reservation_success')

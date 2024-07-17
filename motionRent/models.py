@@ -51,6 +51,7 @@ class Rental(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
+    drivers_license = models.CharField(max_length=50, default='XX-XX-XX')
     customer_email = models.EmailField()
     rental_date = models.DateField()
     return_date = models.DateField()

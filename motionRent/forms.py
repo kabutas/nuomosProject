@@ -2,13 +2,13 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
 
-from .models import Rental
+from .models import Rental, RentalItem
 
 
 class RentalForm(forms.ModelForm):
     class Meta:
         model = Rental
-        fields = ['first_name', 'last_name', 'customer_email', 'rental_date', 'return_date']
+        fields = ['first_name', 'last_name', 'drivers_license', 'customer_email', 'rental_date', 'return_date']
         widgets = {
             'rental_date': forms.DateInput(attrs={'type': 'date'}),
             'return_date': forms.DateInput(attrs={'type': 'date'}),
@@ -52,3 +52,22 @@ class RentalUpdateForm(forms.ModelForm):
     class Meta:
         model = Rental
         fields = ['rental_date', 'return_date']
+
+        widgets = {
+            'rental_date': forms.DateInput(attrs={'type': 'date'}),
+            'return_date': forms.DateInput(attrs={'type': 'date'}),
+        }
+
+
+class StaffRentalForm(forms.ModelForm):
+    class Meta:
+        model = Rental
+        fields = ['rental_item', 'first_name', 'last_name', 'drivers_license', 'customer_email', 'rental_date', 'return_date']
+        widgets = {
+            'rental_date': forms.DateInput(attrs={'type': 'date'}),
+            'return_date': forms.DateInput(attrs={'type': 'date'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super(StaffRentalForm, self).__init__(*args, **kwargs)
+        self.fields['rental_item'].queryset = RentalItem.objects.all()
