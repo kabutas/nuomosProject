@@ -3,7 +3,7 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
 from django.forms import DateInput
 
-from .models import Rental, RentalItem
+from .models import Rental, RentalItem, UserProfile
 
 
 class RentalForm(forms.ModelForm):
@@ -19,7 +19,11 @@ class RentalForm(forms.ModelForm):
         self.user = kwargs.pop('user', None)
         self.reserved_dates = kwargs.pop('reserved_dates', [])
         super(RentalForm, self).__init__(*args, **kwargs)
-
+        if self.user:
+            self.fields['first_name'].initial = self.user.first_name
+            self.fields['last_name'].initial = self.user.last_name
+            self.fields['customer_email'].initial = self.user.email
+            self.fields['drivers_license'].initial = self.user.userprofile.drivers_license
 
 
 class RegistrationForm(UserCreationForm):
@@ -28,16 +32,16 @@ class RegistrationForm(UserCreationForm):
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'first_name', 'last_name', 'drivers_license', 'password1', 'password2']
+        fields = ['username', 'drivers_license', 'email', 'first_name', 'last_name', 'password1', 'password2']
 
     def save(self, commit=True):
         user = super().save(commit=False)
         user.email = self.cleaned_data['email']
         user.first_name = self.cleaned_data['first_name']
         user.last_name = self.cleaned_data['last_name']
-        user.drivers_license = self.cleaned_data['drivers_license']
         if commit:
             user.save()
+            UserProfile.objects.create(user=user, drivers_license=self.cleaned_data['drivers_license'])
         return user
 
 

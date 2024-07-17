@@ -3,6 +3,17 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from datetime import date, timezone, datetime
 
+from django.contrib.auth.models import User
+from django.db import models
+
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    drivers_license = models.CharField(max_length=50)
+
+    def __str__(self):
+        return f'{self.user.username} Profile'
+
 
 class Location(models.Model):
     name = models.CharField(max_length=255)

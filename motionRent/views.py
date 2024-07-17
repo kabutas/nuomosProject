@@ -190,10 +190,7 @@ def register(request):
     if request.method == 'POST':
         form = RegistrationForm(request.POST)
         if form.is_valid():
-            user = form.save(commit=False)
-            user.full_name = form.cleaned_data.get('full_name')
-            user.drivers_license = form.cleaned_data.get('drivers_license')
-            user.save()
+            user = form.save()
             login(request, user)
             return redirect('home')
     else:
