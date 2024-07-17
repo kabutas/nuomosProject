@@ -1,5 +1,7 @@
 {% extends 'main.html' %}
 
+{% load custom_filters %}
+
 {% block content %}
 <div class="container my-5">
     <div class="row justify-content-center">
@@ -13,7 +15,7 @@
                         {% csrf_token %}
                         <div class="mb-3">
                             {{ form.username.label_tag }}
-                            {{ form.username }}
+                            {{ form.username|add_class:"form-control" }}
                             {% if form.username.errors %}
                                 <div class="invalid-feedback d-block">
                                     {{ form.username.errors }}
@@ -22,7 +24,7 @@
                         </div>
                         <div class="mb-3">
                             {{ form.password.label_tag }}
-                            {{ form.password }}
+                            {{ form.password|add_class:"form-control" }}
                             {% if form.password.errors %}
                                 <div class="invalid-feedback d-block">
                                     {{ form.password.errors }}

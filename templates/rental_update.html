@@ -1,9 +1,32 @@
 {% extends 'main.html' %}
-
+{% load custom_filters %}
 {% block content %}
-  <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Update</button>
-  </form>
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header text-center bg-dark text-white">
+                    <h2>Update Item</h2>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        {% for field in form %}
+                            <div class="mb-3">
+                                {{ field.label_tag }}
+                                {{ field|add_class:"form-control" }}
+                                {% if field.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {{ field.errors }}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                        <button type="submit" class="btn btn-dark w-100">Update</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
