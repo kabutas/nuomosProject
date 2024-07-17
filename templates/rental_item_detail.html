@@ -31,6 +31,7 @@
                     <a href="{% url 'create_rental' rental_item.pk %}" class="btn btn-primary mt-auto">Make a Reservation</a>
                 {% else %}
                     <p class="lead"><strong>Availability:</strong> Will be available on {{ return_date }}</p>
+                    <a href="{% url 'create_rental' rental_item.pk %}" class="btn btn-primary mt-auto">Make a Reservation</a>
                 {% endif %}
                 <div class="d-flex mt-3">
                     <a href="{% url 'rental_items_list' %}" class="btn btn-outline-dark mt-auto">Back to Rental Items List</a>

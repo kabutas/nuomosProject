@@ -61,10 +61,11 @@ class Rental(models.Model):
         return f"Rental for: {self.first_name} - ({self.rental_item})"
 
     def clean(self):
+        print(f'return_date: {self.return_date}')
+        print(f'rental_date: {self.rental_date}')
         if self.return_date < self.rental_date:
-            raise ValidationError("Return date must be after rental date.")
-        # if not self.rental_item.is_available():
-        #     raise ValidationError("This item is not available for the selected dates.")
+            raise ValidationError("Return date cannot be earlier than rental date.")
+
 
     def save(self, *args, **kwargs):
         self.clean()

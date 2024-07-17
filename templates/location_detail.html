@@ -18,7 +18,6 @@
             </div>
             <div class="col-md-6">
                 <div class="card mb-4">
-                    <h5 class="card-title">Title of description maybe?</h5>
                     <div class="card-body">
                         <p> {{ location.description }} </p>
                     </div>
@@ -41,8 +40,10 @@
                                                          alt="{{ item.brand }} {{ item.model }}">
                                                 </a>
                                                 {% else %}
-                                                    <img class="card-img-top unavailable" src="{{ item.image.url }}"
+                                                  <a href="{% url 'rental_item_detail' item.id %}">
+                                                    <img class="card-img-top card-img-top2 unavailable " src="{{ item.image.url }}"
                                                          alt="{{ item.brand }} {{ item.model }}">
+                                                </a>
                                                 {% endif %}
                                             {% else %}
                                                 <p>No image available</p>

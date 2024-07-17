@@ -3,7 +3,7 @@ from django.views.generic import TemplateView
 
 from .views import home, RentalItemListView, RentalItemDetailView, RentalCreateView, LocationDetailView, \
     register, login_view, logout_view, about, all_rentals, rental_detail, rental_update, rental_delete, \
-    staff_reservation_create
+    StaffReservationCreateView
 
 urlpatterns = [
     path('', home, name='home'),
@@ -19,7 +19,7 @@ urlpatterns = [
     path('rental/<int:pk>/', rental_detail, name='rental_detail'),
     path('rental/update/<int:rental_id>/', rental_update, name='rental_update'),
     path('rental/delete/<int:rental_id>/', rental_delete, name='rental_delete'),
-    path('staff/reservation/new/', staff_reservation_create, name='staff_reservation_create'),
+    path('staff/reservation/new/', StaffReservationCreateView.as_view(), name='staff_reservation_create'),
     path('reservation-success/', TemplateView.as_view(template_name='reservation_success.html'), name='reservation_success'),
 
 ]

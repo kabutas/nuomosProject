@@ -1,6 +1,7 @@
 {% extends 'main.html' %}
 
 {% load custom_filters %}
+{% load static %}
 
 {% block content %}
 <div class="container my-5">
@@ -31,4 +32,10 @@
         </div>
     </div>
 </div>
+<div id="reserved-dates" style="display:none">{{ reserved_dates }}</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="{% static 'js/scripts.js' %}"></script>
 {% endblock %}

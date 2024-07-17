@@ -48,8 +48,9 @@
                                     <img class="card-img-top" src="{{ rental.image.url }}" alt="rental vehicle image"/>
                                 </a>
                             {% else %}
-                                <img class="card-img-top unavailable" src="{{ rental.image.url }}"
-                                     alt="rental vehicle image"/>
+                                <a href="{% url 'rental_item_detail' rental.id %}">
+                                    <img class="card-img-top unavailable" src="{{ rental.image.url }}" alt="rental vehicle image"/>
+                                </a>
                             {% endif %}
                             <!-- Product details -->
                             <div class="card-body p-4">

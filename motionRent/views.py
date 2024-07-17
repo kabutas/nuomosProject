@@ -1,8 +1,10 @@
-from datetime import datetime
+import json
+from datetime import datetime, timedelta
 from io import BytesIO
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.db import transaction
 from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
@@ -14,7 +16,17 @@ from .models import RentalItem, Rental, Location
 from .forms import RentalForm, RegistrationForm, LoginForm, RentalUpdateForm, StaffRentalForm
 
 
-# Create your views here.
+def get_reserved_dates(rental_item_id):
+    reservations = Rental.objects.filter(rental_item_id=rental_item_id)
+    reserved_dates = []
+    for reservation in reservations:
+        delta = reservation.return_date - reservation.rental_date
+        for i in range(delta.days + 1):
+            day = reservation.rental_date + timezone.timedelta(days=i)
+            reserved_dates.append(day.strftime("%Y-%m-%d"))
+    return reserved_dates
+
+
 def add_watermark(image):
     base_image = Image.open(image).convert("RGBA")
 
@@ -119,6 +131,17 @@ class RentalCreateView(LoginRequiredMixin, CreateView):
     template_name = 'rental_form.html'
     login_url = 'login'
 
+    def get_reserved_dates(self, rental_item_id):
+        reservations = Rental.objects.filter(rental_item_id=rental_item_id)
+        reserved_dates = []
+        for reservation in reservations:
+            delta = reservation.return_date - reservation.rental_date
+            for i in range(delta.days+1):
+                day = reservation.rental_date + timedelta(days=i)
+                reserved_dates.append(day.strftime("%Y-%m-%d"))
+            print(reserved_dates)
+        return reserved_dates
+
     def form_valid(self, form):
         rental_item = get_object_or_404(RentalItem, pk=self.kwargs['pk'])
         form.instance.rental_item = rental_item
@@ -130,14 +153,17 @@ class RentalCreateView(LoginRequiredMixin, CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['rental_item'] = get_object_or_404(RentalItem, pk=self.kwargs['pk'])
+        rental_item = get_object_or_404(RentalItem, pk=self.kwargs['pk'])
+        context['rental_item'] = rental_item
+        reserved_dates = self.get_reserved_dates(rental_item.id)
+        context['reserved_dates'] = json.dumps(reserved_dates)
         return context
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs['user'] = self.request.user
+        kwargs['reserved_dates'] = self.get_reserved_dates(self.kwargs['pk'])
         return kwargs
-
 
 class LocationDetailView(DetailView):
     model = Location
@@ -238,27 +264,17 @@ def rental_delete(request, rental_id):
     return render(request, 'rental_confirm_delete.html', {'rental': rental})
 
 
-@login_required
-@user_passes_test(lambda u: u.is_staff)
-def staff_reservation_create(request):
-    if request.method == 'POST':
-        form = StaffRentalForm(request.POST)
-        rental = form.save(commit=False)
-        rental.user = request.user
-        if form.is_valid():
-            form.save()
-            return redirect('reservation_success')
-    else:
-        form = StaffRentalForm()
+class StaffReservationCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
+    model = Rental
+    form_class = StaffRentalForm
+    template_name = 'staff_reservation_form.html'
+    success_url = reverse_lazy('reservation_success')
 
-    return render(request, 'staff_reservation_form.html', {'form': form})
+    def test_func(self):
+        return self.request.user.is_staff
 
-
-# class StaffRentalCreateView(LoginRequiredMixin, CreateView):
-#     model = Rental
-#     form_class = StaffRentalForm
-#     template_name = 'staff_reservation_form.html'
-#     login_url = 'login'
-#
-#     def get_success_url(self):
-#         return reverse_lazy('reservation_success')
+    def form_valid(self, form):
+        form.instance.user = self.request.user
+        with transaction.atomic():
+            return super().form_valid(form)
+##########################################################################################################
