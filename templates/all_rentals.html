@@ -1,29 +1,43 @@
 {% extends "main.html" %}
 
 {% block content %}
-<h2 class="page-title">All Reservations</h2>
-<table class="table table-responsive">
-    <thead>
-        <tr>
-            <th>Customer Name</th>
-            <th>Email</th>
-            <th>Rental Item</th>
-            <th>Rental Date</th>
-            <th>Return Date</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for rental in rentals %}
-        <tr class="{% if rental.return_date > now %}active-reservation{% endif %}" data-href="{% url 'rental_detail' rental.id %}">
-            <td>{{ rental.customer_name }}</td>
-            <td>{{ rental.customer_email }}</td>
-            <td>{{ rental.rental_item }}</td>
-            <td>{{ rental.rental_date }}</td>
-            <td>{{ rental.return_date }}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
+<div class="container my-5">
+    <h2 class="page-title">All Reservations</h2>
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th>Customer Name</th>
+                    <th>Email</th>
+                    <th>Rental Item</th>
+                    <th>Rental Date</th>
+                    <th>Return Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for rental in rentals %}
+                <tr class="{% if rental.return_date > now %}table-active{% endif %}" data-href="{% url 'rental_detail' rental.id %}">
+                    <td>{{ rental.first_name }} {{ rental.last_name }}</td>
+                    <td>{{ rental.customer_email }}</td>
+                    <td>{{ rental.rental_item }}</td>
+                    <td>{{ rental.rental_date }}</td>
+                    <td>{{ rental.return_date }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<style>
+    tr[data-href] {
+        cursor: pointer;
+    }
+    tr.animate-highlight {
+        background-color: #f8f9fa;
+    }
+</style>
+
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const rows = document.querySelectorAll('tr[data-href]');

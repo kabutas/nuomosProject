@@ -1,16 +1,24 @@
 {% extends "main.html" %}
 
 {% block content %}
-<div class="card" style="width: 18rem;">
-  <div class="card-body">
-    <h5 class="card-title">Rental Details</h5>
-    <h6 class="card-subtitle mb-2 text-muted">{{ rental.rental_item }}</h6>
-    <p class="card-text">Customer Name: {{ rental.customer_name }}</p>
-    <p class="card-text">Email: {{ rental.customer_email }}</p>
-    <p class="card-text">Rental Date: {{ rental.rental_date }}</p>
-    <p class="card-text">Return Date: {{ rental.return_date }}</p>
-    <a href="{% url 'rental_update' rental.id %}" class="btn btn-primary">Change Dates</a>
-    <a href="{% url 'rental_delete' rental.id %}" class="btn btn-danger">Delete Item</a>
-  </div>
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Rental Details</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">{{ rental.rental_item }}</h6>
+                    <p class="card-text"><strong>Customer Name:</strong> {{ rental.first_name }} {{ rental.last_name }}</p>
+                    <p class="card-text"><strong>Email:</strong> {{ rental.customer_email }}</p>
+                    <p class="card-text"><strong>Rental Date:</strong> {{ rental.rental_date }}</p>
+                    <p class="card-text"><strong>Return Date:</strong> {{ rental.return_date }}</p>
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'rental_update' rental.id %}" class="btn btn-primary">Change Dates</a>
+                        <a href="{% url 'rental_delete' rental.id %}" class="btn btn-danger">Delete Item</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 {% endblock %}

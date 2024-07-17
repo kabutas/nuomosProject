@@ -220,7 +220,7 @@ def rental_update(request, rental_id):
         form = RentalUpdateForm(request.POST, instance=rental)
         if form.is_valid():
             form.save()
-            return redirect('some-view-name')  # Redirect to a new URL
+            return redirect('all_rentals')  # Redirect to a new URL
     else:
         form = RentalUpdateForm(instance=rental)
     return render(request, 'rental_update.html', {'form': form})
@@ -230,5 +230,5 @@ def rental_delete(request, rental_id):
     rental = get_object_or_404(Rental, id=rental_id)
     if request.method == 'POST':
         rental.delete()
-        return redirect('some-view-name')  # Redirect to a new URL
+        return redirect('all_rentals')  # Redirect to a new URL
     return render(request, 'rental_confirm_delete.html', {'rental': rental})
