@@ -214,6 +214,8 @@ def rental_detail(request, pk):
     return render(request, 'rental_detail.html', {'rental': rental})
 
 
+@login_required
+@user_passes_test(lambda u: u.is_staff)
 def rental_update(request, rental_id):
     rental = get_object_or_404(Rental, id=rental_id)
     if request.method == 'POST':
@@ -226,31 +228,37 @@ def rental_update(request, rental_id):
     return render(request, 'rental_update.html', {'form': form})
 
 
+@login_required
+@user_passes_test(lambda u: u.is_staff)
 def rental_delete(request, rental_id):
     rental = get_object_or_404(Rental, id=rental_id)
     if request.method == 'POST':
         rental.delete()
-        return redirect('all_rentals')  # Redirect to a new URL
+        return redirect('all_rentals')
     return render(request, 'rental_confirm_delete.html', {'rental': rental})
 
 
+@login_required
+@user_passes_test(lambda u: u.is_staff)
 def staff_reservation_create(request):
     if request.method == 'POST':
         form = StaffRentalForm(request.POST)
+        rental = form.save(commit=False)
+        rental.user = request.user
         if form.is_valid():
             form.save()
-            return redirect('reservation_success')  # Redirect to a success page
+            return redirect('reservation_success')
     else:
         form = StaffRentalForm()
 
     return render(request, 'staff_reservation_form.html', {'form': form})
 
 
-class StaffRentalCreateView(LoginRequiredMixin, CreateView):
-    model = Rental
-    form_class = StaffRentalForm
-    template_name = 'staff_reservation_form.html'
-    login_url = 'login'
-
-    def get_success_url(self):
-        return reverse_lazy('reservation_success')
+# class StaffRentalCreateView(LoginRequiredMixin, CreateView):
+#     model = Rental
+#     form_class = StaffRentalForm
+#     template_name = 'staff_reservation_form.html'
+#     login_url = 'login'
+#
+#     def get_success_url(self):
+#         return reverse_lazy('reservation_success')

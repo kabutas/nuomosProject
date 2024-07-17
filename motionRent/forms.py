@@ -22,6 +22,14 @@ class RentalForm(forms.ModelForm):
             self.fields['last_name'].initial = user.last_name
             self.fields['customer_email'].initial = user.email
 
+    # def save(self, commit=True):
+    #     instance = super(RentalForm, self).save(commit=False)
+    #     if self.user:
+    #         instance.user = self.user
+    #     if commit:
+    #         instance.save()
+    #     return instance
+
 
 class RegistrationForm(UserCreationForm):
     email = forms.EmailField(required=True)
@@ -69,5 +77,10 @@ class StaffRentalForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
         super(StaffRentalForm, self).__init__(*args, **kwargs)
         self.fields['rental_item'].queryset = RentalItem.objects.all()
+        if user:
+            self.fields['first_name'].initial = user.first_name
+            self.fields['last_name'].initial = user.last_name
+            self.fields['customer_email'].initial = user.email
