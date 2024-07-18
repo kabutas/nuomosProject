@@ -23,7 +23,8 @@ class RentalForm(forms.ModelForm):
             self.fields['first_name'].initial = self.user.first_name
             self.fields['last_name'].initial = self.user.last_name
             self.fields['customer_email'].initial = self.user.email
-            self.fields['drivers_license'].initial = self.user.userprofile.drivers_license
+            if hasattr(self.user, 'userprofile'):
+                self.fields['drivers_license'].initial = self.user.userprofile.drivers_license
 
 
 class RegistrationForm(UserCreationForm):
